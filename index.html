@@ -214,9 +214,85 @@
 
     .checkbox-label:has(input:checked) .checkbox-text { color: var(--text); }
 
+    /* Toggle + Radio */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+    }
+
+    .toggle-row:hover { background: var(--surface-hover); }
+
+    .toggle-row:has(input:checked) { border-color: var(--accent); }
+
+    .toggle-row input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .toggle-text {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .toggle-row:has(input:checked) .toggle-text { color: var(--text); }
+
+    .radio-options {
+      margin-top: 6px;
+      padding: 10px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* CSS display overrides HTML hidden attribute — explicit rule required */
+    [hidden] { display: none !important; }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .radio-label input[type="radio"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .radio-text {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .radio-label:has(input:checked) .radio-text { color: var(--text); }
+
+    /* Number grids */
     .number-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .number-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 8px;
     }
 
@@ -347,6 +423,7 @@
       .layout { grid-template-columns: 1fr; }
       .form-panel { border-right: none; border-bottom: 1px solid var(--border); }
       .preview-panel { position: static; height: auto; }
+      .number-row-3 { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -368,66 +445,50 @@
 
     <form id="search-form" autocomplete="off">
 
-      <div class="section">
-        <div class="section-title">キーワード</div>
-        <div class="field">
-          <label for="and-words">AND — すべて含む（スペース区切り）</label>
-          <input type="text" id="and-words" name="andWords" placeholder="例: Claude AI Anthropic">
-        </div>
-        <div class="field">
-          <label for="or-words">OR — いずれか含む（スペース区切り）</label>
-          <input type="text" id="or-words" name="orWords" placeholder="例: Claude Gemini GPT">
-        </div>
-        <div class="field">
-          <label for="exclude-words">除外 — 含まない（スペース区切り）</label>
-          <input type="text" id="exclude-words" name="excludeWords" placeholder="例: spam bot">
-        </div>
-      </div>
-
-      <hr class="divider">
-
+      <!-- 1. アカウント -->
       <div class="section">
         <div class="section-title">アカウント</div>
         <div class="field">
-          <label for="from-account">from — 送信元</label>
+          <label for="from-account">次のアカウントが送信</label>
           <input type="text" id="from-account" name="fromAccount" placeholder="例: elonmusk（@ 不要）">
         </div>
         <div class="field">
-          <label for="to-account">to — 宛先</label>
+          <label for="to-account">次のアカウント宛て</label>
           <input type="text" id="to-account" name="toAccount" placeholder="例: elonmusk（@ 不要）">
         </div>
         <div class="field">
-          <label for="mention-account">mention — メンション</label>
+          <label for="mention-account">次のアカウントへの @ツイート</label>
           <input type="text" id="mention-account" name="mentionAccount" placeholder="例: elonmusk（@ 不要）">
         </div>
       </div>
 
       <hr class="divider">
 
+      <!-- 2. キーワード -->
       <div class="section">
-        <div class="section-title">期間</div>
-        <div class="date-presets">
-          <button type="button" class="preset-btn" data-preset="today">今日</button>
-          <button type="button" class="preset-btn" data-preset="week">1週間</button>
-          <button type="button" class="preset-btn" data-preset="month">1ヶ月</button>
-        </div>
-        <div class="date-row">
-          <div class="field">
-            <label for="since-date">開始日（since）</label>
-            <input type="date" id="since-date" name="sinceDate">
-          </div>
-          <div class="field">
-            <label for="until-date">終了日（until）</label>
-            <input type="date" id="until-date" name="untilDate">
-          </div>
-        </div>
-      </div>
-
-      <hr class="divider">
-
-      <div class="section">
-        <div class="section-title">言語</div>
+        <div class="section-title">キーワード</div>
         <div class="field">
+          <label for="and-words">次のキーワードをすべて含む（スペース区切り）</label>
+          <input type="text" id="and-words" name="andWords" placeholder="例: Claude AI Anthropic">
+        </div>
+        <div class="field">
+          <label for="exact-phrase">次のキーワード全体を含む（完全一致）</label>
+          <input type="text" id="exact-phrase" name="exactPhrase" placeholder="例: large language model">
+        </div>
+        <div class="field">
+          <label for="or-words">次のキーワードのいずれかを含む（スペース区切り）</label>
+          <input type="text" id="or-words" name="orWords" placeholder="例: Claude Gemini GPT">
+        </div>
+        <div class="field">
+          <label for="exclude-words">次のキーワードを含まない（スペース区切り）</label>
+          <input type="text" id="exclude-words" name="excludeWords" placeholder="例: spam bot">
+        </div>
+        <div class="field">
+          <label for="hashtags">次のハッシュタグを含む（スペース区切り、# 不要）</label>
+          <input type="text" id="hashtags" name="hashtags" placeholder="例: AI LLM ChatGPT">
+        </div>
+        <div class="field">
+          <label for="lang">言語</label>
           <select id="lang" name="lang">
             <option value="">指定なし</option>
             <option value="ja">日本語</option>
@@ -445,6 +506,92 @@
 
       <hr class="divider">
 
+      <!-- 3. 日付 -->
+      <div class="section">
+        <div class="section-title">日付</div>
+        <div class="date-presets">
+          <button type="button" class="preset-btn" data-preset="today">今日</button>
+          <button type="button" class="preset-btn" data-preset="week">1週間</button>
+          <button type="button" class="preset-btn" data-preset="month">1ヶ月</button>
+        </div>
+        <div class="date-row">
+          <div class="field">
+            <label for="since-date">次の日以降（since）</label>
+            <input type="date" id="since-date" name="sinceDate">
+          </div>
+          <div class="field">
+            <label for="until-date">次の日以前（until）</label>
+            <input type="date" id="until-date" name="untilDate">
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 4. エンゲージメント -->
+      <div class="section">
+        <div class="section-title">エンゲージメント（最小値）</div>
+        <div class="number-row-3">
+          <div class="field">
+            <label for="min-replies">返信数</label>
+            <input type="number" id="min-replies" name="minReplies" min="0" placeholder="例: 5">
+          </div>
+          <div class="field">
+            <label for="min-faves">いいね数</label>
+            <input type="number" id="min-faves" name="minFaves" min="0" placeholder="例: 100">
+          </div>
+          <div class="field">
+            <label for="min-retweets">リポスト数</label>
+            <input type="number" id="min-retweets" name="minRetweets" min="0" placeholder="例: 10">
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 5. 返信 -->
+      <div class="section">
+        <div class="section-title">返信</div>
+        <label class="toggle-row">
+          <input type="checkbox" id="replies-toggle" name="repliesToggle">
+          <span class="toggle-text">返信フィルターを使用する</span>
+        </label>
+        <div class="radio-options" id="replies-options" hidden>
+          <label class="radio-label">
+            <input type="radio" name="replies-mode" value="include" checked>
+            <span class="radio-text">返信と元のポストを含める</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="replies-mode" value="only">
+            <span class="radio-text">返信のみ表示</span>
+          </label>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 6. リンク -->
+      <div class="section">
+        <div class="section-title">リンク</div>
+        <label class="toggle-row">
+          <input type="checkbox" id="links-toggle" name="linksToggle">
+          <span class="toggle-text">リンクフィルターを使用する</span>
+        </label>
+        <div class="radio-options" id="links-options" hidden>
+          <label class="radio-label">
+            <input type="radio" name="links-mode" value="include" checked>
+            <span class="radio-text">リンクを含むポストを含める</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="links-mode" value="only">
+            <span class="radio-text">リンクを含むポストのみ表示</span>
+          </label>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 7. メディア（拡張） -->
       <div class="section">
         <div class="section-title">メディア</div>
         <div class="checkbox-group">
@@ -456,26 +603,6 @@
             <input type="checkbox" id="filter-videos" name="filterVideos">
             <span class="checkbox-text">動画あり（filter:videos）</span>
           </label>
-          <label class="checkbox-label">
-            <input type="checkbox" id="filter-links" name="filterLinks">
-            <span class="checkbox-text">リンクあり（filter:links）</span>
-          </label>
-        </div>
-      </div>
-
-      <hr class="divider">
-
-      <div class="section">
-        <div class="section-title">エンゲージメント（最小値）</div>
-        <div class="number-row">
-          <div class="field">
-            <label for="min-faves">いいね数</label>
-            <input type="number" id="min-faves" name="minFaves" min="0" placeholder="例: 100">
-          </div>
-          <div class="field">
-            <label for="min-retweets">リポスト数</label>
-            <input type="number" id="min-retweets" name="minRetweets" min="0" placeholder="例: 10">
-          </div>
         </div>
       </div>
 
@@ -495,7 +622,6 @@
     </div>
 
     <div class="action-buttons">
-      <!-- Copy button: uses CSS class toggle to swap icon/label, no innerHTML -->
       <button type="button" class="btn btn-secondary" id="copy-btn">
         <svg class="icon-copy" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -522,12 +648,21 @@
 (function () {
   'use strict';
 
+  function radioVal(name) {
+    var el = document.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : '';
+  }
+
   // --- Pure function: build Twitter search query string ---
   function buildQuery(s) {
     var parts = [];
 
     if (s.andWords) {
       s.andWords.trim().split(/\s+/).forEach(function (w) { if (w) parts.push(w); });
+    }
+
+    if (s.exactPhrase) {
+      parts.push('"' + s.exactPhrase.trim() + '"');
     }
 
     if (s.orWords) {
@@ -543,6 +678,14 @@
       s.excludeWords.trim().split(/\s+/).forEach(function (w) { if (w) parts.push('-' + w); });
     }
 
+    if (s.hashtags) {
+      s.hashtags.trim().split(/\s+/).filter(Boolean).forEach(function (t) {
+        parts.push('#' + t.replace(/^#/, ''));
+      });
+    }
+
+    if (s.lang) parts.push('lang:' + s.lang);
+
     function cleanHandle(h) { return h.trim().replace(/^@/, ''); }
     if (s.fromAccount)    parts.push('from:' + cleanHandle(s.fromAccount));
     if (s.toAccount)      parts.push('to:'   + cleanHandle(s.toAccount));
@@ -551,14 +694,15 @@
     if (s.sinceDate) parts.push('since:' + s.sinceDate);
     if (s.untilDate) parts.push('until:' + s.untilDate);
 
-    if (s.lang) parts.push('lang:' + s.lang);
+    if (s.minReplies)  parts.push('min_replies:'  + s.minReplies);
+    if (s.minFaves)    parts.push('min_faves:'    + s.minFaves);
+    if (s.minRetweets) parts.push('min_retweets:' + s.minRetweets);
+
+    if (s.repliesToggle && s.repliesMode === 'only') parts.push('filter:replies');
+    if (s.linksToggle   && s.linksMode   === 'only') parts.push('filter:links');
 
     if (s.filterImages) parts.push('filter:images');
     if (s.filterVideos) parts.push('filter:videos');
-    if (s.filterLinks)  parts.push('filter:links');
-
-    if (s.minFaves)    parts.push('min_faves:'    + s.minFaves);
-    if (s.minRetweets) parts.push('min_retweets:' + s.minRetweets);
 
     return parts.join(' ');
   }
@@ -574,34 +718,50 @@
     function c(id) { return document.getElementById(id).checked; }
     return {
       andWords:       v('and-words'),
+      exactPhrase:    v('exact-phrase'),
       orWords:        v('or-words'),
       excludeWords:   v('exclude-words'),
+      hashtags:       v('hashtags'),
+      lang:           v('lang'),
       fromAccount:    v('from-account'),
       toAccount:      v('to-account'),
       mentionAccount: v('mention-account'),
       sinceDate:      v('since-date'),
       untilDate:      v('until-date'),
-      lang:           v('lang'),
-      filterImages:   c('filter-images'),
-      filterVideos:   c('filter-videos'),
-      filterLinks:    c('filter-links'),
+      minReplies:     v('min-replies'),
       minFaves:       v('min-faves'),
       minRetweets:    v('min-retweets'),
+      repliesToggle:  c('replies-toggle'),
+      repliesMode:    c('replies-toggle') ? radioVal('replies-mode') : '',
+      linksToggle:    c('links-toggle'),
+      linksMode:      c('links-toggle')   ? radioVal('links-mode')   : '',
+      filterImages:   c('filter-images'),
+      filterVideos:   c('filter-videos'),
     };
+  }
+
+  // --- Show/hide radio-options based on toggle state ---
+  function syncToggleUI(toggleId) {
+    var optionsId = toggleId.replace('-toggle', '-options');
+    var checked = document.getElementById(toggleId).checked;
+    document.getElementById(optionsId).hidden = !checked;
   }
 
   // --- Restore form from URLSearchParams ---
   function setFormFromParams(params) {
     [
       ['andWords',       'and-words'],
+      ['exactPhrase',    'exact-phrase'],
       ['orWords',        'or-words'],
       ['excludeWords',   'exclude-words'],
+      ['hashtags',       'hashtags'],
+      ['lang',           'lang'],
       ['fromAccount',    'from-account'],
       ['toAccount',      'to-account'],
       ['mentionAccount', 'mention-account'],
       ['sinceDate',      'since-date'],
       ['untilDate',      'until-date'],
-      ['lang',           'lang'],
+      ['minReplies',     'min-replies'],
       ['minFaves',       'min-faves'],
       ['minRetweets',    'min-retweets'],
     ].forEach(function (pair) {
@@ -609,11 +769,29 @@
       if (val !== null) document.getElementById(pair[1]).value = val;
     });
 
-    ['filterImages', 'filterVideos', 'filterLinks'].forEach(function (key) {
+    ['filterImages', 'filterVideos'].forEach(function (key) {
       var val = params.get(key);
       if (val !== null) {
         var id = key.replace(/([A-Z])/g, function (ch) { return '-' + ch.toLowerCase(); });
         document.getElementById(id).checked = (val === 'true');
+      }
+    });
+
+    ['repliesToggle', 'linksToggle'].forEach(function (key) {
+      var val = params.get(key);
+      if (val !== null) {
+        var id = key.replace(/([A-Z])/g, function (ch) { return '-' + ch.toLowerCase(); });
+        document.getElementById(id).checked = (val === 'true');
+        syncToggleUI(id);
+      }
+    });
+
+    ['repliesMode', 'linksMode'].forEach(function (key) {
+      var val = params.get(key);
+      if (val) {
+        var name = key.replace(/([A-Z])/g, function (ch) { return '-' + ch.toLowerCase(); });
+        var el = document.querySelector('input[name="' + name + '"][value="' + val + '"]');
+        if (el) el.checked = true;
       }
     });
   }
@@ -630,7 +808,7 @@
     return params;
   }
 
-  // --- Main update: rebuild query, update UI, sync page URL ---
+  // --- Main update ---
   function update() {
     var state = getFormState();
     var query = buildQuery(state);
@@ -698,7 +876,7 @@
     });
   }
 
-  // --- Clipboard copy (no innerHTML) ---
+  // --- Clipboard copy ---
   var copyTimer = null;
 
   function showCopySuccess() {
@@ -737,6 +915,14 @@
 
     form.addEventListener('change', update);
 
+    // Toggle → show/hide radio-options
+    ['replies-toggle', 'links-toggle'].forEach(function (id) {
+      document.getElementById(id).addEventListener('change', function () {
+        syncToggleUI(id);
+        update();
+      });
+    });
+
     document.querySelectorAll('.preset-btn').forEach(function (btn) {
       btn.addEventListener('click', function () { setPreset(btn.dataset.preset); });
     });
@@ -757,6 +943,7 @@
     document.getElementById('clear-btn').addEventListener('click', function () {
       form.reset();
       clearPresetHighlight();
+      ['replies-toggle', 'links-toggle'].forEach(syncToggleUI);
       update();
     });
 
