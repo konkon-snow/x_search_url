@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X (Twitter) 詳細検索URL ジェネレーター</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #000000;
+      --surface: #16181c;
+      --surface-hover: #1d1f23;
+      --border: #2f3336;
+      --text: #e7e9ea;
+      --text-muted: #71767b;
+      --accent: #1d9bf0;
+      --accent-hover: #1a8cd8;
+      --accent-text: #ffffff;
+      --success: #00ba7c;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+
+    .logo { width: 26px; height: 26px; fill: var(--text); flex-shrink: 0; }
+
+    header h1 { font-size: 17px; font-weight: 700; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      max-width: 1100px;
+      margin: 0 auto;
+      min-height: calc(100vh - 55px);
+    }
+
+    .form-panel {
+      padding: 20px 24px 40px;
+      border-right: 1px solid var(--border);
+    }
+
+    .preview-panel {
+      padding: 20px 24px;
+      position: sticky;
+      top: 55px;
+      height: calc(100vh - 55px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+    }
+
+    /* --- Form --- */
+    .form-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+    }
+
+    .section { margin-bottom: 20px; }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .field { margin-bottom: 10px; }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 14px;
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color .15s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    input[type="number"]:focus,
+    select:focus { border-color: var(--accent); }
+
+    input::placeholder { color: var(--text-muted); }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.5);
+      cursor: pointer;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2371767b' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+      cursor: pointer;
+    }
+
+    select option { background: var(--surface); }
+
+    /* Date presets */
+    .date-presets {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .preset-btn {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 10px;
+      cursor: pointer;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+
+    .preset-btn:hover {
+      background: var(--surface-hover);
+      border-color: var(--text-muted);
+      color: var(--text);
+    }
+
+    .preset-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--accent-text);
+    }
+
+    .date-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* Checkboxes */
+    .checkbox-group { display: flex; flex-direction: column; gap: 6px; }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+    }
+
+    .checkbox-label:hover { background: var(--surface-hover); }
+
+    .checkbox-label:has(input:checked) { border-color: var(--accent); }
+
+    .checkbox-label input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .checkbox-text {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .checkbox-label:has(input:checked) .checkbox-text { color: var(--text); }
+
+    .number-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 4px 0 20px;
+    }
+
+    /* --- Preview panel --- */
+    .preview-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .query-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      font-family: "SFMono-Regular", "Cascadia Code", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 13px;
+      color: var(--accent);
+      word-break: break-all;
+      min-height: 56px;
+      line-height: 1.6;
+    }
+
+    .query-box.empty {
+      color: var(--text-muted);
+      font-family: inherit;
+      font-style: italic;
+      font-size: 14px;
+    }
+
+    .url-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      word-break: break-all;
+      min-height: 52px;
+      line-height: 1.6;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 8px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: 24px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      transition: background .15s, color .15s, border-color .15s, opacity .15s;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-text);
+    }
+
+    .btn-primary:not([aria-disabled="true"]):hover { background: var(--accent-hover); }
+
+    .btn-primary[aria-disabled="true"] {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover { background: var(--surface); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-ghost:hover { color: var(--text); background: var(--surface); }
+
+    /* Copy button success state */
+    #copy-btn.copied {
+      background: var(--success);
+      color: #000;
+      border-color: var(--success);
+    }
+
+    #copy-btn .icon-copy  { display: inline-flex; }
+    #copy-btn .icon-check { display: none; }
+    #copy-btn .label-copy  { display: inline; }
+    #copy-btn .label-check { display: none; }
+
+    #copy-btn.copied .icon-copy  { display: none; }
+    #copy-btn.copied .icon-check { display: inline-flex; }
+    #copy-btn.copied .label-copy  { display: none; }
+    #copy-btn.copied .label-check { display: inline; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .layout { grid-template-columns: 1fr; }
+      .form-panel { border-right: none; border-bottom: 1px solid var(--border); }
+      .preview-panel { position: static; height: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <svg class="logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+  </svg>
+  <h1>詳細検索URL ジェネレーター</h1>
+</header>
+
+<div class="layout">
+  <!-- Left: Form -->
+  <div class="form-panel">
+    <div class="form-toolbar">
+      <button type="button" class="btn btn-ghost" id="clear-btn">すべてクリア</button>
+    </div>
+
+    <form id="search-form" autocomplete="off">
+
+      <div class="section">
+        <div class="section-title">キーワード</div>
+        <div class="field">
+          <label for="and-words">AND — すべて含む（スペース区切り）</label>
+          <input type="text" id="and-words" name="andWords" placeholder="例: Claude AI Anthropic">
+        </div>
+        <div class="field">
+          <label for="or-words">OR — いずれか含む（スペース区切り）</label>
+          <input type="text" id="or-words" name="orWords" placeholder="例: Claude Gemini GPT">
+        </div>
+        <div class="field">
+          <label for="exclude-words">除外 — 含まない（スペース区切り）</label>
+          <input type="text" id="exclude-words" name="excludeWords" placeholder="例: spam bot">
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section">
+        <div class="section-title">アカウント</div>
+        <div class="field">
+          <label for="from-account">from — 送信元</label>
+          <input type="text" id="from-account" name="fromAccount" placeholder="例: elonmusk（@ 不要）">
+        </div>
+        <div class="field">
+          <label for="to-account">to — 宛先</label>
+          <input type="text" id="to-account" name="toAccount" placeholder="例: elonmusk（@ 不要）">
+        </div>
+        <div class="field">
+          <label for="mention-account">mention — メンション</label>
+          <input type="text" id="mention-account" name="mentionAccount" placeholder="例: elonmusk（@ 不要）">
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section">
+        <div class="section-title">期間</div>
+        <div class="date-presets">
+          <button type="button" class="preset-btn" data-preset="today">今日</button>
+          <button type="button" class="preset-btn" data-preset="week">1週間</button>
+          <button type="button" class="preset-btn" data-preset="month">1ヶ月</button>
+        </div>
+        <div class="date-row">
+          <div class="field">
+            <label for="since-date">開始日（since）</label>
+            <input type="date" id="since-date" name="sinceDate">
+          </div>
+          <div class="field">
+            <label for="until-date">終了日（until）</label>
+            <input type="date" id="until-date" name="untilDate">
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section">
+        <div class="section-title">言語</div>
+        <div class="field">
+          <select id="lang" name="lang">
+            <option value="">指定なし</option>
+            <option value="ja">日本語</option>
+            <option value="en">英語</option>
+            <option value="zh">中国語</option>
+            <option value="ko">韓国語</option>
+            <option value="fr">フランス語</option>
+            <option value="de">ドイツ語</option>
+            <option value="es">スペイン語</option>
+            <option value="pt">ポルトガル語</option>
+            <option value="ar">アラビア語</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section">
+        <div class="section-title">メディア</div>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="filter-images" name="filterImages">
+            <span class="checkbox-text">画像あり（filter:images）</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="filter-videos" name="filterVideos">
+            <span class="checkbox-text">動画あり（filter:videos）</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="filter-links" name="filterLinks">
+            <span class="checkbox-text">リンクあり（filter:links）</span>
+          </label>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section">
+        <div class="section-title">エンゲージメント（最小値）</div>
+        <div class="number-row">
+          <div class="field">
+            <label for="min-faves">いいね数</label>
+            <input type="number" id="min-faves" name="minFaves" min="0" placeholder="例: 100">
+          </div>
+          <div class="field">
+            <label for="min-retweets">リポスト数</label>
+            <input type="number" id="min-retweets" name="minRetweets" min="0" placeholder="例: 10">
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Right: Preview -->
+  <div class="preview-panel">
+    <div>
+      <div class="preview-label">検索クエリ</div>
+      <div class="query-box empty" id="query-preview">（条件を入力してください）</div>
+    </div>
+
+    <div>
+      <div class="preview-label">生成 URL</div>
+      <div class="url-box" id="url-preview">https://twitter.com/search</div>
+    </div>
+
+    <div class="action-buttons">
+      <!-- Copy button: uses CSS class toggle to swap icon/label, no innerHTML -->
+      <button type="button" class="btn btn-secondary" id="copy-btn">
+        <svg class="icon-copy" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        <svg class="icon-check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span class="label-copy">URL をコピー</span>
+        <span class="label-check">コピーしました！</span>
+      </button>
+
+      <a class="btn btn-primary" id="open-btn" href="https://twitter.com/search" target="_blank" rel="noopener noreferrer" aria-disabled="true">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+        X で検索を開く
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // --- Pure function: build Twitter search query string ---
+  function buildQuery(s) {
+    var parts = [];
+
+    if (s.andWords) {
+      s.andWords.trim().split(/\s+/).forEach(function (w) { if (w) parts.push(w); });
+    }
+
+    if (s.orWords) {
+      var terms = s.orWords.trim().split(/\s+/).filter(Boolean);
+      if (terms.length > 1) {
+        parts.push('(' + terms.join(' OR ') + ')');
+      } else if (terms.length === 1) {
+        parts.push(terms[0]);
+      }
+    }
+
+    if (s.excludeWords) {
+      s.excludeWords.trim().split(/\s+/).forEach(function (w) { if (w) parts.push('-' + w); });
+    }
+
+    function cleanHandle(h) { return h.trim().replace(/^@/, ''); }
+    if (s.fromAccount)    parts.push('from:' + cleanHandle(s.fromAccount));
+    if (s.toAccount)      parts.push('to:'   + cleanHandle(s.toAccount));
+    if (s.mentionAccount) parts.push('@'     + cleanHandle(s.mentionAccount));
+
+    if (s.sinceDate) parts.push('since:' + s.sinceDate);
+    if (s.untilDate) parts.push('until:' + s.untilDate);
+
+    if (s.lang) parts.push('lang:' + s.lang);
+
+    if (s.filterImages) parts.push('filter:images');
+    if (s.filterVideos) parts.push('filter:videos');
+    if (s.filterLinks)  parts.push('filter:links');
+
+    if (s.minFaves)    parts.push('min_faves:'    + s.minFaves);
+    if (s.minRetweets) parts.push('min_retweets:' + s.minRetweets);
+
+    return parts.join(' ');
+  }
+
+  function buildUrl(query) {
+    if (!query) return 'https://twitter.com/search';
+    return 'https://twitter.com/search?q=' + encodeURIComponent(query) + '&src=typed_query&f=live';
+  }
+
+  // --- Read all form values ---
+  function getFormState() {
+    function v(id) { return document.getElementById(id).value; }
+    function c(id) { return document.getElementById(id).checked; }
+    return {
+      andWords:       v('and-words'),
+      orWords:        v('or-words'),
+      excludeWords:   v('exclude-words'),
+      fromAccount:    v('from-account'),
+      toAccount:      v('to-account'),
+      mentionAccount: v('mention-account'),
+      sinceDate:      v('since-date'),
+      untilDate:      v('until-date'),
+      lang:           v('lang'),
+      filterImages:   c('filter-images'),
+      filterVideos:   c('filter-videos'),
+      filterLinks:    c('filter-links'),
+      minFaves:       v('min-faves'),
+      minRetweets:    v('min-retweets'),
+    };
+  }
+
+  // --- Restore form from URLSearchParams ---
+  function setFormFromParams(params) {
+    [
+      ['andWords',       'and-words'],
+      ['orWords',        'or-words'],
+      ['excludeWords',   'exclude-words'],
+      ['fromAccount',    'from-account'],
+      ['toAccount',      'to-account'],
+      ['mentionAccount', 'mention-account'],
+      ['sinceDate',      'since-date'],
+      ['untilDate',      'until-date'],
+      ['lang',           'lang'],
+      ['minFaves',       'min-faves'],
+      ['minRetweets',    'min-retweets'],
+    ].forEach(function (pair) {
+      var val = params.get(pair[0]);
+      if (val !== null) document.getElementById(pair[1]).value = val;
+    });
+
+    ['filterImages', 'filterVideos', 'filterLinks'].forEach(function (key) {
+      var val = params.get(key);
+      if (val !== null) {
+        var id = key.replace(/([A-Z])/g, function (ch) { return '-' + ch.toLowerCase(); });
+        document.getElementById(id).checked = (val === 'true');
+      }
+    });
+  }
+
+  // --- Serialize state to URLSearchParams (skip empty/false) ---
+  function stateToParams(state) {
+    var params = new URLSearchParams();
+    Object.keys(state).forEach(function (key) {
+      var val = state[key];
+      if (val !== '' && val !== false && val !== null && val !== undefined) {
+        params.set(key, String(val));
+      }
+    });
+    return params;
+  }
+
+  // --- Main update: rebuild query, update UI, sync page URL ---
+  function update() {
+    var state = getFormState();
+    var query = buildQuery(state);
+    var url   = buildUrl(query);
+
+    var queryEl = document.getElementById('query-preview');
+    queryEl.textContent = query || '（条件を入力してください）';
+    queryEl.classList.toggle('empty', !query);
+
+    document.getElementById('url-preview').textContent = url;
+
+    var openBtn = document.getElementById('open-btn');
+    openBtn.href = url;
+    if (query) {
+      openBtn.removeAttribute('aria-disabled');
+    } else {
+      openBtn.setAttribute('aria-disabled', 'true');
+    }
+
+    var params  = stateToParams(state);
+    var newHref = params.toString()
+      ? location.pathname + '?' + params.toString()
+      : location.pathname;
+    history.replaceState(null, '', newHref);
+  }
+
+  // --- Date helpers ---
+  function toISODate(d) {
+    var y   = d.getFullYear();
+    var m   = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function setPreset(preset) {
+    var today = new Date();
+    var until = toISODate(today);
+    var since;
+
+    if (preset === 'today') {
+      since = until;
+    } else if (preset === 'week') {
+      var w = new Date(today);
+      w.setDate(w.getDate() - 7);
+      since = toISODate(w);
+    } else if (preset === 'month') {
+      var mo = new Date(today);
+      mo.setMonth(mo.getMonth() - 1);
+      since = toISODate(mo);
+    }
+
+    document.getElementById('since-date').value = since;
+    document.getElementById('until-date').value = until;
+
+    document.querySelectorAll('.preset-btn').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.preset === preset);
+    });
+
+    update();
+  }
+
+  function clearPresetHighlight() {
+    document.querySelectorAll('.preset-btn').forEach(function (btn) {
+      btn.classList.remove('active');
+    });
+  }
+
+  // --- Clipboard copy (no innerHTML) ---
+  var copyTimer = null;
+
+  function showCopySuccess() {
+    var btn = document.getElementById('copy-btn');
+    btn.classList.add('copied');
+    if (copyTimer) clearTimeout(copyTimer);
+    copyTimer = setTimeout(function () {
+      btn.classList.remove('copied');
+      copyTimer = null;
+    }, 2000);
+  }
+
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    Object.assign(ta.style, { position: 'fixed', top: '-9999px', left: '-9999px', opacity: '0' });
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try { document.execCommand('copy'); } catch (_) {}
+    document.body.removeChild(ta);
+  }
+
+  // --- Init ---
+  function init() {
+    setFormFromParams(new URLSearchParams(location.search));
+
+    var form = document.getElementById('search-form');
+
+    form.addEventListener('input', function (e) {
+      if (e.target.id === 'since-date' || e.target.id === 'until-date') {
+        clearPresetHighlight();
+      }
+      update();
+    });
+
+    form.addEventListener('change', update);
+
+    document.querySelectorAll('.preset-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () { setPreset(btn.dataset.preset); });
+    });
+
+    document.getElementById('copy-btn').addEventListener('click', function () {
+      var url = document.getElementById('url-preview').textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(showCopySuccess, function () {
+          fallbackCopy(url);
+          showCopySuccess();
+        });
+      } else {
+        fallbackCopy(url);
+        showCopySuccess();
+      }
+    });
+
+    document.getElementById('clear-btn').addEventListener('click', function () {
+      form.reset();
+      clearPresetHighlight();
+      update();
+    });
+
+    update();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+</body>
+</html>
