@@ -568,47 +568,44 @@
 
       <hr class="divider">
 
-      <!-- 3. 返信 -->
+      <!-- 3. 日付 -->
       <fieldset class="section">
-        <legend class="section-title">返信</legend>
-        <label class="switch-label">
-          <input type="checkbox" id="replies-toggle" name="repliesToggle"
-                 aria-expanded="false" aria-controls="replies-options">
-          <span class="switch-text">返信フィルターを使用する</span>
-          <span class="switch-track" aria-hidden="true"></span>
-        </label>
-        <div class="radio-options" id="replies-options" hidden>
-          <label class="radio-label">
-            <input type="radio" name="replies-mode" value="include" checked>
-            <span class="radio-text">返信と元のポストを含める</span>
-          </label>
-          <label class="radio-label">
-            <input type="radio" name="replies-mode" value="only">
-            <span class="radio-text">返信のみ表示</span>
-          </label>
+        <legend class="section-title">日付</legend>
+        <div class="date-presets">
+          <button type="button" class="preset-btn" data-preset="today">今日</button>
+          <button type="button" class="preset-btn" data-preset="week">1週間</button>
+          <button type="button" class="preset-btn" data-preset="month">1ヶ月</button>
+        </div>
+        <div class="date-row">
+          <div class="field">
+            <label for="since-date">次の日以降（since）</label>
+            <input type="date" id="since-date" name="sinceDate">
+          </div>
+          <div class="field">
+            <label for="until-date">次の日以前（until）</label>
+            <input type="date" id="until-date" name="untilDate">
+          </div>
         </div>
       </fieldset>
 
       <hr class="divider">
 
-      <!-- 4. リンク -->
+      <!-- 4. エンゲージメント -->
       <fieldset class="section">
-        <legend class="section-title">リンク</legend>
-        <label class="switch-label">
-          <input type="checkbox" id="links-toggle" name="linksToggle"
-                 aria-expanded="false" aria-controls="links-options">
-          <span class="switch-text">リンクフィルターを使用する</span>
-          <span class="switch-track" aria-hidden="true"></span>
-        </label>
-        <div class="radio-options" id="links-options" hidden>
-          <label class="radio-label">
-            <input type="radio" name="links-mode" value="include" checked>
-            <span class="radio-text">リンクを含むポストを含める</span>
-          </label>
-          <label class="radio-label">
-            <input type="radio" name="links-mode" value="only">
-            <span class="radio-text">リンクを含むポストのみ表示</span>
-          </label>
+        <legend class="section-title">エンゲージメント（最小値）</legend>
+        <div class="number-row-3">
+          <div class="field">
+            <label for="min-replies">返信数</label>
+            <input type="number" id="min-replies" name="minReplies" min="0" placeholder="例: 5">
+          </div>
+          <div class="field">
+            <label for="min-faves">いいね数</label>
+            <input type="number" id="min-faves" name="minFaves" min="0" placeholder="例: 100">
+          </div>
+          <div class="field">
+            <label for="min-retweets">リポスト数</label>
+            <input type="number" id="min-retweets" name="minRetweets" min="0" placeholder="例: 10">
+          </div>
         </div>
       </fieldset>
 
@@ -631,44 +628,47 @@
 
       <hr class="divider">
 
-      <!-- 6. エンゲージメント -->
+      <!-- 6. 返信 -->
       <fieldset class="section">
-        <legend class="section-title">エンゲージメント（最小値）</legend>
-        <div class="number-row-3">
-          <div class="field">
-            <label for="min-replies">返信数</label>
-            <input type="number" id="min-replies" name="minReplies" min="0" placeholder="例: 5">
-          </div>
-          <div class="field">
-            <label for="min-faves">いいね数</label>
-            <input type="number" id="min-faves" name="minFaves" min="0" placeholder="例: 100">
-          </div>
-          <div class="field">
-            <label for="min-retweets">リポスト数</label>
-            <input type="number" id="min-retweets" name="minRetweets" min="0" placeholder="例: 10">
-          </div>
+        <legend class="section-title">返信</legend>
+        <label class="switch-label">
+          <input type="checkbox" id="replies-toggle" name="repliesToggle"
+                 aria-expanded="false" aria-controls="replies-options">
+          <span class="switch-text">返信フィルターを使用する</span>
+          <span class="switch-track" aria-hidden="true"></span>
+        </label>
+        <div class="radio-options" id="replies-options" hidden>
+          <label class="radio-label">
+            <input type="radio" name="replies-mode" value="include" checked>
+            <span class="radio-text">返信と元のポストを含める</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="replies-mode" value="only">
+            <span class="radio-text">返信のみ表示</span>
+          </label>
         </div>
       </fieldset>
 
       <hr class="divider">
 
-      <!-- 7. 日付 -->
+      <!-- 7. リンク -->
       <fieldset class="section">
-        <legend class="section-title">日付</legend>
-        <div class="date-presets">
-          <button type="button" class="preset-btn" data-preset="today">今日</button>
-          <button type="button" class="preset-btn" data-preset="week">1週間</button>
-          <button type="button" class="preset-btn" data-preset="month">1ヶ月</button>
-        </div>
-        <div class="date-row">
-          <div class="field">
-            <label for="since-date">次の日以降（since）</label>
-            <input type="date" id="since-date" name="sinceDate">
-          </div>
-          <div class="field">
-            <label for="until-date">次の日以前（until）</label>
-            <input type="date" id="until-date" name="untilDate">
-          </div>
+        <legend class="section-title">リンク</legend>
+        <label class="switch-label">
+          <input type="checkbox" id="links-toggle" name="linksToggle"
+                 aria-expanded="false" aria-controls="links-options">
+          <span class="switch-text">リンクフィルターを使用する</span>
+          <span class="switch-track" aria-hidden="true"></span>
+        </label>
+        <div class="radio-options" id="links-options" hidden>
+          <label class="radio-label">
+            <input type="radio" name="links-mode" value="include" checked>
+            <span class="radio-text">リンクを含むポストを含める</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="links-mode" value="only">
+            <span class="radio-text">リンクを含むポストのみ表示</span>
+          </label>
         </div>
       </fieldset>
 
