@@ -8,6 +8,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
+      color-scheme: dark;
       --bg: #000000;
       --surface: #16181c;
       --surface-hover: #1d1f23;
@@ -26,7 +27,7 @@
       background: var(--bg);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-      font-size: 15px;
+      font-size: 0.9375rem;
       line-height: 1.5;
       min-height: 100vh;
     }
@@ -47,7 +48,23 @@
 
     .logo { width: 26px; height: 26px; fill: var(--text); flex-shrink: 0; }
 
-    header h1 { font-size: 17px; font-weight: 700; }
+    header h1 { font-size: 1.0625rem; font-weight: 700; }
+
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 1rem;
+      background: var(--accent);
+      color: var(--accent-text);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.875rem;
+      z-index: 50;
+      text-decoration: none;
+      transition: top .15s;
+    }
+    .skip-link:focus { top: 0.5rem; }
 
     .layout {
       display: grid;
@@ -82,8 +99,14 @@
 
     .section { margin-bottom: 20px; }
 
+    fieldset.section {
+      border: none;
+      padding: 0;
+      min-width: 0;
+    }
+
     .section-title {
-      font-size: 11px;
+      font-size: 0.6875rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
@@ -95,7 +118,7 @@
 
     .field label {
       display: block;
-      font-size: 12px;
+      font-size: 0.75rem;
       color: var(--text-muted);
       margin-bottom: 4px;
     }
@@ -109,7 +132,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       color: var(--text);
-      font-size: 14px;
+      font-size: 1rem;
       padding: 9px 12px;
       outline: none;
       transition: border-color .15s;
@@ -117,10 +140,15 @@
       -webkit-appearance: none;
     }
 
-    input[type="text"]:focus,
-    input[type="date"]:focus,
-    input[type="number"]:focus,
-    select:focus { border-color: var(--accent); }
+    input[type="text"]:focus-visible,
+    input[type="date"]:focus-visible,
+    input[type="number"]:focus-visible,
+    select:focus-visible { border-color: var(--accent); }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
 
     input::placeholder { color: var(--text-muted); }
 
@@ -155,7 +183,7 @@
       border: 1px solid var(--border);
       border-radius: 20px;
       color: var(--text-muted);
-      font-size: 13px;
+      font-size: 0.8125rem;
       font-weight: 500;
       padding: 6px 10px;
       cursor: pointer;
@@ -208,17 +236,17 @@
     }
 
     .checkbox-text {
-      font-size: 13px;
+      font-size: 0.8125rem;
       color: var(--text-muted);
     }
 
     .checkbox-label:has(input:checked) .checkbox-text { color: var(--text); }
 
-    /* Toggle + Radio */
-    .toggle-row {
+    /* Switch */
+    .switch-label {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: space-between;
       padding: 9px 12px;
       background: var(--surface);
       border: 1px solid var(--border);
@@ -227,24 +255,49 @@
       transition: background .15s, border-color .15s;
     }
 
-    .toggle-row:hover { background: var(--surface-hover); }
+    .switch-label:hover { background: var(--surface-hover); }
+    .switch-label:has(input:checked) { border-color: var(--accent); }
 
-    .toggle-row:has(input:checked) { border-color: var(--accent); }
+    .switch-label input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
 
-    .toggle-row input[type="checkbox"] {
+    .switch-text {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      transition: color .15s;
+    }
+    .switch-label:has(input:checked) .switch-text { color: var(--text); }
+
+    .switch-track {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      background: var(--border);
+      border-radius: 11px;
+      flex-shrink: 0;
+      transition: background .15s;
+    }
+    .switch-label:has(input:checked) .switch-track { background: var(--accent); }
+
+    .switch-track::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
       width: 16px;
       height: 16px;
-      accent-color: var(--accent);
-      cursor: pointer;
-      flex-shrink: 0;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform .15s;
     }
-
-    .toggle-text {
-      font-size: 13px;
-      color: var(--text-muted);
+    .switch-label:has(input:checked) .switch-track::after {
+      transform: translateX(18px);
     }
-
-    .toggle-row:has(input:checked) .toggle-text { color: var(--text); }
 
     .radio-options {
       margin-top: 6px;
@@ -277,7 +330,7 @@
     }
 
     .radio-text {
-      font-size: 13px;
+      font-size: 0.8125rem;
       color: var(--text-muted);
     }
 
@@ -304,7 +357,7 @@
 
     /* --- Preview panel --- */
     .preview-label {
-      font-size: 11px;
+      font-size: 0.6875rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
@@ -318,7 +371,7 @@
       border-radius: var(--radius);
       padding: 14px;
       font-family: "SFMono-Regular", "Cascadia Code", Consolas, "Liberation Mono", Menlo, monospace;
-      font-size: 13px;
+      font-size: 0.8125rem;
       color: var(--accent);
       word-break: break-all;
       min-height: 56px;
@@ -337,7 +390,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 14px;
-      font-size: 12px;
+      font-size: 0.75rem;
       color: var(--text-muted);
       word-break: break-all;
       min-height: 52px;
@@ -360,7 +413,7 @@
       gap: 8px;
       padding: 11px 20px;
       border-radius: 24px;
-      font-size: 15px;
+      font-size: 0.9375rem;
       font-weight: 700;
       cursor: pointer;
       border: none;
@@ -393,7 +446,7 @@
     .btn-ghost {
       background: transparent;
       color: var(--text-muted);
-      font-size: 13px;
+      font-size: 0.8125rem;
       font-weight: 500;
       padding: 6px 12px;
       border-radius: var(--radius-sm);
@@ -425,9 +478,17 @@
       .preview-panel { position: static; height: auto; }
       .number-row-3 { grid-template-columns: 1fr 1fr; }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+      }
+    }
   </style>
 </head>
 <body>
+
+<a href="#main-content" class="skip-link">メインコンテンツへスキップ</a>
 
 <header>
   <svg class="logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -436,6 +497,7 @@
   <h1>詳細検索URL ジェネレーター</h1>
 </header>
 
+<main id="main-content" tabindex="-1">
 <div class="layout">
   <!-- Left: Form -->
   <div class="form-panel">
@@ -445,28 +507,9 @@
 
     <form id="search-form" autocomplete="off">
 
-      <!-- 1. アカウント -->
-      <div class="section">
-        <div class="section-title">アカウント</div>
-        <div class="field">
-          <label for="from-account">次のアカウントが送信</label>
-          <input type="text" id="from-account" name="fromAccount" placeholder="例: elonmusk（@ 不要）">
-        </div>
-        <div class="field">
-          <label for="to-account">次のアカウント宛て</label>
-          <input type="text" id="to-account" name="toAccount" placeholder="例: elonmusk（@ 不要）">
-        </div>
-        <div class="field">
-          <label for="mention-account">次のアカウントへの @ツイート</label>
-          <input type="text" id="mention-account" name="mentionAccount" placeholder="例: elonmusk（@ 不要）">
-        </div>
-      </div>
-
-      <hr class="divider">
-
-      <!-- 2. キーワード -->
-      <div class="section">
-        <div class="section-title">キーワード</div>
+      <!-- 1. キーワード -->
+      <fieldset class="section">
+        <legend class="section-title">キーワード</legend>
         <div class="field">
           <label for="and-words">次のキーワードをすべて含む（スペース区切り）</label>
           <input type="text" id="and-words" name="andWords" placeholder="例: Claude AI Anthropic">
@@ -502,13 +545,116 @@
             <option value="ar">アラビア語</option>
           </select>
         </div>
-      </div>
+      </fieldset>
 
       <hr class="divider">
 
-      <!-- 3. 日付 -->
-      <div class="section">
-        <div class="section-title">日付</div>
+      <!-- 2. アカウント -->
+      <fieldset class="section">
+        <legend class="section-title">アカウント</legend>
+        <div class="field">
+          <label for="from-account">次のアカウントが送信</label>
+          <input type="text" id="from-account" name="fromAccount" placeholder="例: elonmusk（@ 不要）">
+        </div>
+        <div class="field">
+          <label for="to-account">次のアカウント宛て</label>
+          <input type="text" id="to-account" name="toAccount" placeholder="例: elonmusk（@ 不要）">
+        </div>
+        <div class="field">
+          <label for="mention-account">次のアカウントへの @ツイート</label>
+          <input type="text" id="mention-account" name="mentionAccount" placeholder="例: elonmusk（@ 不要）">
+        </div>
+      </fieldset>
+
+      <hr class="divider">
+
+      <!-- 3. 返信 -->
+      <fieldset class="section">
+        <legend class="section-title">返信</legend>
+        <label class="switch-label">
+          <input type="checkbox" id="replies-toggle" name="repliesToggle"
+                 aria-expanded="false" aria-controls="replies-options">
+          <span class="switch-text">返信フィルターを使用する</span>
+          <span class="switch-track" aria-hidden="true"></span>
+        </label>
+        <div class="radio-options" id="replies-options" hidden>
+          <label class="radio-label">
+            <input type="radio" name="replies-mode" value="include" checked>
+            <span class="radio-text">返信と元のポストを含める</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="replies-mode" value="only">
+            <span class="radio-text">返信のみ表示</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <hr class="divider">
+
+      <!-- 4. リンク -->
+      <fieldset class="section">
+        <legend class="section-title">リンク</legend>
+        <label class="switch-label">
+          <input type="checkbox" id="links-toggle" name="linksToggle"
+                 aria-expanded="false" aria-controls="links-options">
+          <span class="switch-text">リンクフィルターを使用する</span>
+          <span class="switch-track" aria-hidden="true"></span>
+        </label>
+        <div class="radio-options" id="links-options" hidden>
+          <label class="radio-label">
+            <input type="radio" name="links-mode" value="include" checked>
+            <span class="radio-text">リンクを含むポストを含める</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="links-mode" value="only">
+            <span class="radio-text">リンクを含むポストのみ表示</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <hr class="divider">
+
+      <!-- 5. メディア（拡張） -->
+      <fieldset class="section">
+        <legend class="section-title">メディア</legend>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="filter-images" name="filterImages">
+            <span class="checkbox-text">画像あり（filter:images）</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="filter-videos" name="filterVideos">
+            <span class="checkbox-text">動画あり（filter:videos）</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <hr class="divider">
+
+      <!-- 6. エンゲージメント -->
+      <fieldset class="section">
+        <legend class="section-title">エンゲージメント（最小値）</legend>
+        <div class="number-row-3">
+          <div class="field">
+            <label for="min-replies">返信数</label>
+            <input type="number" id="min-replies" name="minReplies" min="0" placeholder="例: 5">
+          </div>
+          <div class="field">
+            <label for="min-faves">いいね数</label>
+            <input type="number" id="min-faves" name="minFaves" min="0" placeholder="例: 100">
+          </div>
+          <div class="field">
+            <label for="min-retweets">リポスト数</label>
+            <input type="number" id="min-retweets" name="minRetweets" min="0" placeholder="例: 10">
+          </div>
+        </div>
+      </fieldset>
+
+      <hr class="divider">
+
+      <!-- 7. 日付 -->
+      <fieldset class="section">
+        <legend class="section-title">日付</legend>
         <div class="date-presets">
           <button type="button" class="preset-btn" data-preset="today">今日</button>
           <button type="button" class="preset-btn" data-preset="week">1週間</button>
@@ -524,87 +670,7 @@
             <input type="date" id="until-date" name="untilDate">
           </div>
         </div>
-      </div>
-
-      <hr class="divider">
-
-      <!-- 4. エンゲージメント -->
-      <div class="section">
-        <div class="section-title">エンゲージメント（最小値）</div>
-        <div class="number-row-3">
-          <div class="field">
-            <label for="min-replies">返信数</label>
-            <input type="number" id="min-replies" name="minReplies" min="0" placeholder="例: 5">
-          </div>
-          <div class="field">
-            <label for="min-faves">いいね数</label>
-            <input type="number" id="min-faves" name="minFaves" min="0" placeholder="例: 100">
-          </div>
-          <div class="field">
-            <label for="min-retweets">リポスト数</label>
-            <input type="number" id="min-retweets" name="minRetweets" min="0" placeholder="例: 10">
-          </div>
-        </div>
-      </div>
-
-      <hr class="divider">
-
-      <!-- 5. 返信 -->
-      <div class="section">
-        <div class="section-title">返信</div>
-        <label class="toggle-row">
-          <input type="checkbox" id="replies-toggle" name="repliesToggle">
-          <span class="toggle-text">返信フィルターを使用する</span>
-        </label>
-        <div class="radio-options" id="replies-options" hidden>
-          <label class="radio-label">
-            <input type="radio" name="replies-mode" value="include" checked>
-            <span class="radio-text">返信と元のポストを含める</span>
-          </label>
-          <label class="radio-label">
-            <input type="radio" name="replies-mode" value="only">
-            <span class="radio-text">返信のみ表示</span>
-          </label>
-        </div>
-      </div>
-
-      <hr class="divider">
-
-      <!-- 6. リンク -->
-      <div class="section">
-        <div class="section-title">リンク</div>
-        <label class="toggle-row">
-          <input type="checkbox" id="links-toggle" name="linksToggle">
-          <span class="toggle-text">リンクフィルターを使用する</span>
-        </label>
-        <div class="radio-options" id="links-options" hidden>
-          <label class="radio-label">
-            <input type="radio" name="links-mode" value="include" checked>
-            <span class="radio-text">リンクを含むポストを含める</span>
-          </label>
-          <label class="radio-label">
-            <input type="radio" name="links-mode" value="only">
-            <span class="radio-text">リンクを含むポストのみ表示</span>
-          </label>
-        </div>
-      </div>
-
-      <hr class="divider">
-
-      <!-- 7. メディア（拡張） -->
-      <div class="section">
-        <div class="section-title">メディア</div>
-        <div class="checkbox-group">
-          <label class="checkbox-label">
-            <input type="checkbox" id="filter-images" name="filterImages">
-            <span class="checkbox-text">画像あり（filter:images）</span>
-          </label>
-          <label class="checkbox-label">
-            <input type="checkbox" id="filter-videos" name="filterVideos">
-            <span class="checkbox-text">動画あり（filter:videos）</span>
-          </label>
-        </div>
-      </div>
+      </fieldset>
 
     </form>
   </div>
@@ -643,6 +709,7 @@
     </div>
   </div>
 </div>
+</main>
 
 <script>
 (function () {
@@ -745,6 +812,7 @@
     var optionsId = toggleId.replace('-toggle', '-options');
     var checked = document.getElementById(toggleId).checked;
     document.getElementById(optionsId).hidden = !checked;
+    document.getElementById(toggleId).setAttribute('aria-expanded', String(checked));
   }
 
   // --- Restore form from URLSearchParams ---
